@@ -6,34 +6,27 @@
   <title>Movie Manager</title>
 </head>
 <body>
-  <?php
-    require_once('includes/php/imdb.php');
-    require('includes/php/movie.php');
+<?php
 
-    $imdb = new IMDb(true, true, 0);
-    $movieDirs = array_diff(scandir('./movies'), array('..', '.'));
-    $movies = array();
+use buibr\tmdbapi\TMDB;
 
-    foreach ($movieDirs as $movieDir) {
-      $imdbMovies = $imdb->find_by_title($movieDir);
+require_once('./vendor/autoload.php');
+require('./includes/php/movie.php');
 
-      if (count($imdbMovies) > 0) {
-        $imdbMovie = $imdbMovies[0];
-        $movie = new movie($imdbMovie->title, null, $imdbMovie->plot, './movies/' . $movieDir . '/' . scandir('./movies/' . $movieDir)[2]);
-        array_push($movies, $movie);
-      }
-    }
+$config = include('includes/php/config.php');
+$tmdb = new TMDB($config);
 
-    foreach ($movies as $movie) {
-      echo "
-        {<br/>
-          title: {$movie->getTitle()}<br/>
-          description: {$movie->getDescription()}<br/>
-          path: {$movie->getPath()}<br/>
-        },<br/>
-      ";
-    }
-  ?>
-  <script src="https://vjs.zencdn.net/7.6.0/video.js"></script>
+$movieDirs = array_diff(scandir('./movies'), array('..', '.'));
+$movies = array();
+
+foreach ($movieDirs as $movieDir) {
+  $json = json_decode($tmdb->searchMovie($movieDir)[0]->getJSON(), true);
+  $parent = './movies/' . $movieDir;
+  array_push($movies, new movie($json['title'], 'https://image.tmdb.org/t/p/original' . $json['poster_path'], $json['overview'], $parent . '/' . scandir($parent)[2]));
+}
+
+print_r($movies);
+?>
+<script src="https://vjs.zencdn.net/7.6.0/video.js"></script>
 </body>
 </html>

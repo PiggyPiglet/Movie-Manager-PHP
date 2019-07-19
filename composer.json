@@ -1,0 +1,5 @@
+{
+  "require": {
+    "buibr/tmdbapi": "dev-master"
+  }
+}
