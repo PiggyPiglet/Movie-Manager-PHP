@@ -1,5 +1,6 @@
 {
   "require": {
-    "buibr/tmdbapi": "dev-master"
+    "buibr/tmdbapi": "dev-master",
+    "ext-json": "*"
   }
 }

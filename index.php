@@ -20,9 +20,13 @@ $movieDirs = array_diff(scandir('./movies'), array('..', '.'));
 $movies = array();
 
 foreach ($movieDirs as $movieDir) {
-  $json = json_decode($tmdb->searchMovie($movieDir)[0]->getJSON(), true);
-  $parent = './movies/' . $movieDir;
-  array_push($movies, new movie($json['title'], 'https://image.tmdb.org/t/p/original' . $json['poster_path'], $json['overview'], $parent . '/' . scandir($parent)[2]));
+  $results = $tmdb->searchMovie($movieDir);
+
+  if (count($results) > 0) {
+    $json = json_decode($results[0]->getJSON(), true);
+    $parent = './movies/' . $movieDir;
+    array_push($movies, new movie($json['title'], 'https://image.tmdb.org/t/p/original' . $json['poster_path'], $json['overview'], $parent . '/' . scandir($parent)[2]));
+  }
 }
 
 print_r($movies);
